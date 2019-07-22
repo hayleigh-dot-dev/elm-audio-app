@@ -1,0 +1,6 @@
+# dependencies
+elm-stuff
+node_modules
+
+# build files
+.cache
