@@ -8,7 +8,7 @@ const context = new (AudioContext || webkit.AudioContext)()
 // solution. Ideally you'll create a port and do this inside the elm application
 // whenever it is most appropriate.
 window.onclick = () => {
-  if (context.status === 'suspended') context.resume()
+  if (context.state === 'suspended') context.resume()
 }
 
 const audio = new VirtualAudioGraph(context)
