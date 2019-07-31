@@ -138,7 +138,10 @@ export default class VirtualAudioGraph {
       $: this.$context.createGain()
     }
 
-    this.$nodes.$.gain.value = this.$context.state === 'suspended' ? 0 : 0.9
+    // Schedule the master gain to fade in as soon as the audio context is 
+    // resumed (if it was suspended) or immediately (if the context was created)
+    // in response to some user action.
+    this.$nodes.$.gain.linearRampToValueAtTime(1, this.$context.currentTime + 1)
     this.$nodes.$.connect(this.$context.destination)
 
     // We keep track of the prebious graph so we can perform a diff and work out
@@ -224,6 +227,7 @@ export default class VirtualAudioGraph {
   // bassically exists so developers don't have to reach in and
   // touch the "real" audio context directly.
   suspend () {
+    this.$nodes.$.gain.value = 0
     this.$context.suspend()
   }
 
