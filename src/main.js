@@ -1,17 +1,21 @@
 import { Elm } from './elm/Main.elm'
 import VirtualAudioGraph from './js/virtual-audio'
 
-const context = new (AudioContext || webkit.AudioContext)()
+// We need this because safari and older versions of chrome use the webkit
+// prefix.
+const AudioContext = window.AudioContext || window.webkitAudioContext
+
+const context = new AudioContext()
+const audio = new VirtualAudioGraph(context)
 
 // These days, an audio context starts in a suspended state and must be 
 // explicitly resumed after some user interaction event. This is a catch-all
 // solution. Ideally you'll create a port and do this inside the elm application
 // whenever it is most appropriate.
 window.onclick = () => {
-  if (context.state === 'suspended') context.resume()
+  if (context.state === 'suspended') audio.resume()
 }
 
-const audio = new VirtualAudioGraph(context)
 const app = Elm.Main.init({
   node: document.querySelector('#app'),
   flags: context
