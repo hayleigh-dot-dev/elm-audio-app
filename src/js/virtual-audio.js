@@ -134,7 +134,13 @@ export default class VirtualAudioGraph {
     // on construction.
     this.$context = context
     // A reference to the real graph of audio nodes
-    this.$nodes = {}
+    this.$nodes = {
+      $: this.$context.createGain()
+    }
+
+    this.$nodes.$.gain.value = this.$context.state === 'suspended' ? 0 : 0.9
+    this.$nodes.$.connect(this.$context.destination)
+
     // We keep track of the prebious graph so we can perform a diff and work out
     // what has changed between updates.
     this.vPrev = {}
@@ -226,6 +232,7 @@ export default class VirtualAudioGraph {
   // touch the "real" audio context directly.
   resume () {
     this.$context.resume()
+    this.$nodes.$.gain.linearRampToValueAtTime(1, this.$context.currentTime + 0.1)
   }
 
   // Private Methods ===========================================================
@@ -242,7 +249,7 @@ export default class VirtualAudioGraph {
         $node = this.$context.createBufferSource()
         break
       case 'AudioDestinationNode':
-        $node = this.$context.destination
+        $node = this.$nodes.$
         break
       case 'BiquadFilterNode':
         $node = this.$context.createBiquadFilter()
